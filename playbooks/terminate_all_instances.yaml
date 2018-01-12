@@ -1,0 +1,16 @@
+---
+- name: terminate all instances
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+  - vars.yaml
+  tasks:
+  - name: terminate all managed instances
+    ec2:
+      region: "{{ aws_region }}"
+      image: "dummy"
+      count_tag:
+        Name: "{{ item.name }}"
+      exact_count: 0
+    with_items: "{{ aws_instances }}"

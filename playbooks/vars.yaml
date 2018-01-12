@@ -1,0 +1,61 @@
+aws_region: ap-northeast-1
+aws_vpc_id: vpc-3e1fc959
+aws_keypair: bbrfkr-keypair-for-aws
+aws_ami_id: ami-6be57d0d
+aws_subnets:
+- name: &subnet-iac bbrfkr-subnet-iac
+  cidr: 192.168.100.0/24
+  state: present
+- name: &subnet-test bbrfkr-subnet-test
+  cidr: 192.168.101.0/24
+  state: present
+- name: &subnet-prod bbrfkr-subnet-prod
+  cidr: 192.168.102.0/24
+  state: present
+aws_groups:
+- name: bbrfkr-sg-ssh
+  description: ssh
+  state: present
+  rules:
+  - proto: tcp
+    from_port: 22
+    to_port: 22
+    cidr_ip: 0.0.0.0/0
+- name: bbrfkr-sg-web
+  description: web
+  state: present
+  rules:
+  - proto: tcp
+    from_port: 22
+    to_port: 22
+    cidr_ip: 192.168.0.0/16
+  - proto: tcp
+    from_port: 80
+    to_port: 80
+    cidr_ip: 0.0.0.0/0
+aws_instances:
+- name: bbrfkr-instance-jenkins
+  instance_type: t2.small
+  security_group: bbrfkr-sg-web
+  state: present
+  vpc_subnet: *subnet-iac
+- name: bbrfkr-instance-test-blue
+  instance_type: t2.micro
+  security_group: bbrfkr-sg-web
+  state: present
+  vpc_subnet: *subnet-test
+- name: bbrfkr-instance-test-green
+  instance_type: t2.micro
+  security_group: bbrfkr-sg-web
+  state: present
+  vpc_subnet: *subnet-test
+- name: bbrfkr-instance-prod-blue
+  instance_type: t2.micro
+  security_group: bbrfkr-sg-web
+  state: present
+  vpc_subnet: *subnet-prod
+- name: bbrfkr-instance-prod-green
+  instance_type: t2.micro
+  security_group: bbrfkr-sg-web
+  state: present 
+  vpc_subnet: *subnet-prod

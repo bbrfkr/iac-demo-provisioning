@@ -1,0 +1,18 @@
+---
+- name: manage groups
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+  - vars.yaml
+  tasks:
+  - name: manage groups
+    ec2_group:
+      region: "{{ aws_region }}"
+      vpc_id: "{{ aws_vpc_id }}"
+      name: "{{ item.name }}"
+      description: "{{ item.description }}"
+      state: "{{ item.state }}"
+      rules: "{{ item.rules }}" 
+    with_items: "{{ aws_groups }}"
+
