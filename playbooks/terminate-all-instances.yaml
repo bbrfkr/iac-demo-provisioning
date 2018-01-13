@@ -27,7 +27,7 @@
     poll: 0
     when: item.instances | length != 0
     with_items: "{{ reg_ec2_facts.results }}"
-  - name: Wait for instances termination to complete
+  - name: wait for instances termination to complete
     async_status:
       jid: "{{ item.ansible_job_id }}"
     register: ec2_jobs

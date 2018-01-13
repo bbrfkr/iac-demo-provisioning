@@ -31,11 +31,13 @@
       group: "{{ item.item.item.security_group }}"
       vpc_subnet_id: "{{ item.subnets.0.id }}"
       volumes: "{{ item.item.item.volumes | default(omit) }}"
+      instance_profile_name: "{{ item.item.item.iam_role | default(omit) }}"
       instance_tags: "{{ item.item.item.tags }}"
+      zone: "{{ item.item.item.az }}"
       count_tag:
         Name: "{{ item.item.item.tags.Name }}"
       exact_count: 1
-      assign_public_ip: yes
+      assign_public_ip: "{{ item.item.item.assign_public_ip }}"
       wait: yes
     register: reg_create_instances
     async: 3600
@@ -48,5 +50,26 @@
     register: ec2_jobs
     until: ec2_jobs.finished
     retries: 300
-    with_items: "{{ reg_create_instances.results }}"
     when: item.item.item.instances | length == 0
+    with_items: "{{ reg_create_instances.results }}"
+  - name: check instance id of iac-jenkins instance
+    ec2_instance_facts:
+      region: "{{ aws_region }}"
+      filters:
+        instance-state-name: running
+        "tag:Name": bbrfkr-instance-iac-jenkins
+    register: reg_iac_jenkins
+  - name: associate eip to iac-jenkins instance
+    ec2_eip:
+      region: "{{ aws_region }}"
+      device_id: "{{ reg_iac_jenkins.instances.0.instance_id }}"
+      reuse_existing_ip_allowed: yes
+      in_vpc: yes 
+    when: reg_iac_jenkins.instances != []
+  - name: attach ebs volume to iac-jenkins instance
+    ec2_vol:
+      region: "{{ aws_region }}"
+      name: bbrfkr-ebs-jenkins-home
+      instance: "{{ reg_iac_jenkins.instances.0.instance_id }}"
+      device_name: /dev/sdf
+      delete_on_termination: no

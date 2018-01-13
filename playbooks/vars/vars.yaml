@@ -2,6 +2,7 @@ aws_region: ap-northeast-1
 aws_vpc_id: vpc-3e1fc959
 aws_keypair: bbrfkr-keypair-for-aws
 aws_ami_id: ami-6be57d0d
+aws_iam_role_for_ec2: &iam_role bbrfkr-role-for-ec2
 aws_subnets:
 - name: &subnet-iac bbrfkr-subnet-iac
   cidr: 192.168.100.0/24
@@ -53,6 +54,10 @@ aws_groups:
     from_port: 8080
     to_port: 8080
     cidr_ip: 0.0.0.0/0
+  - proto: tcp
+    from_port: 50000
+    to_port: 50000
+    cidr_ip: 192.168.0.0/16
   - proto: icmp 
     from_port: -1
     to_port: -1
@@ -61,10 +66,13 @@ aws_instances:
 - tags:
     Name: bbrfkr-instance-iac-jenkins
     Env: iac
-  instance_type: t2.small
+  instance_type: t2.micro
   security_group: bbrfkr-sg-jenkins
   state: present
+  iam_role: *iam_role
   vpc_subnet: *subnet-iac
+  az: ap-northeast-1c
+  assign_public_ip: no
 - tags:
     Name: bbrfkr-instance-test-blue
     Env: test
@@ -73,6 +81,8 @@ aws_instances:
   security_group: bbrfkr-sg-web
   state: present
   vpc_subnet: *subnet-test
+  az: ap-northeast-1c
+  assign_public_ip: yes
 - tags:
     Name: bbrfkr-instance-test-green
     Env: test
@@ -81,6 +91,8 @@ aws_instances:
   security_group: bbrfkr-sg-web
   state: present
   vpc_subnet: *subnet-test
+  az: ap-northeast-1c
+  assign_public_ip: yes
 - tags:
     Name: bbrfkr-instance-prod-blue
     Env: prod
@@ -89,6 +101,8 @@ aws_instances:
   security_group: bbrfkr-sg-web
   state: present
   vpc_subnet: *subnet-prod
+  az: ap-northeast-1c
+  assign_public_ip: yes
 - tags:
     Name: bbrfkr-instance-prod-green
     Env: prod
@@ -97,3 +111,5 @@ aws_instances:
   security_group: bbrfkr-sg-web
   state: present 
   vpc_subnet: *subnet-prod
+  az: ap-northeast-1c
+  assign_public_ip: yes

@@ -1,6 +1,59 @@
 ---
 - name: deploy instance for iac-jenkins
   hosts: tag_Name_bbrfkr_instance_iac_jenkins
+  remote_user: ec2-user
   vars_files:
   - vars/vars.yaml
   tasks:
+  - name: install docker
+    yum:
+      name: docker
+      state: installed
+    become: yes
+  - name: enable docker
+    service:
+      name: docker
+      state: started
+      enabled: yes
+    become: yes
+  - name: create jenkins home
+    file:
+      path: /var/jenkins_home
+      state: directory
+    become: yes
+  - name: format ebs volume
+    filesystem:
+      fstype: xfs
+      dev: /dev/sdf
+    become: yes
+  - name: mount ebs volume
+    mount:
+      path: /var/jenkins_home
+      src: /dev/sdf
+      fstype: xfs
+      state: present
+    become: yes
+  - name: install pip 
+    easy_install:
+      name: pip
+      state: present
+    become: yes
+  - name: install docker-py
+    pip:
+      name: docker
+      state: present
+    become: yes
+  - name: create jenkins container
+    docker_container:
+      name: jenkins-for-iac
+      image: docker.io/jenkins:latest
+      auto_remove: yes
+      user: root
+      detach: yes
+      ports:
+      - 8080:8080
+      - 50000:50000
+      volumes:
+      - /var/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    become: yes
