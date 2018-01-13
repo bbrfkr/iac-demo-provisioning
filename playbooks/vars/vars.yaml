@@ -21,6 +21,10 @@ aws_groups:
     from_port: 22
     to_port: 22
     cidr_ip: 0.0.0.0/0
+  - proto: icmp 
+    from_port: -1
+    to_port: -1
+    cidr_ip: 192.168.0.0/16
 - name: bbrfkr-sg-web
   description: web
   state: present
@@ -33,28 +37,62 @@ aws_groups:
     from_port: 80
     to_port: 80
     cidr_ip: 0.0.0.0/0
+  - proto: icmp 
+    from_port: -1
+    to_port: -1
+    cidr_ip: 192.168.0.0/16
+- name: bbrfkr-sg-jenkins
+  description: web
+  state: present
+  rules:
+  - proto: tcp
+    from_port: 22
+    to_port: 22
+    cidr_ip: 192.168.0.0/16
+  - proto: tcp
+    from_port: 8080
+    to_port: 8080
+    cidr_ip: 0.0.0.0/0
+  - proto: icmp 
+    from_port: -1
+    to_port: -1
+    cidr_ip: 192.168.0.0/16
 aws_instances:
-- name: bbrfkr-instance-jenkins
+- tags:
+    Name: bbrfkr-instance-iac-jenkins
+    Env: iac
   instance_type: t2.small
-  security_group: bbrfkr-sg-web
+  security_group: bbrfkr-sg-jenkins
   state: present
   vpc_subnet: *subnet-iac
-- name: bbrfkr-instance-test-blue
+- tags:
+    Name: bbrfkr-instance-test-blue
+    Env: test
+    Color: blue
   instance_type: t2.micro
   security_group: bbrfkr-sg-web
   state: present
   vpc_subnet: *subnet-test
-- name: bbrfkr-instance-test-green
+- tags:
+    Name: bbrfkr-instance-test-green
+    Env: test
+    Color: green
   instance_type: t2.micro
   security_group: bbrfkr-sg-web
   state: present
   vpc_subnet: *subnet-test
-- name: bbrfkr-instance-prod-blue
+- tags:
+    Name: bbrfkr-instance-prod-blue
+    Env: prod
+    Color: blue
   instance_type: t2.micro
   security_group: bbrfkr-sg-web
   state: present
   vpc_subnet: *subnet-prod
-- name: bbrfkr-instance-prod-green
+- tags:
+    Name: bbrfkr-instance-prod-green
+    Env: prod
+    Color: green
   instance_type: t2.micro
   security_group: bbrfkr-sg-web
   state: present 

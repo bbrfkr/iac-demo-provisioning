@@ -1,0 +1,6 @@
+---
+- name: deploy instance for iac-jenkins
+  hosts: tag_Name_bbrfkr_instance_iac_jenkins
+  vars_files:
+  - vars/vars.yaml
+  tasks:
