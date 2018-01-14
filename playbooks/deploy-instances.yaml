@@ -5,6 +5,11 @@
   vars_files:
   - vars/vars.yaml
   tasks:
+  - name: install pip 
+    easy_install:
+      name: pip
+      state: present
+    become: yes
   - name: install docker
     yum:
       name: docker
@@ -32,11 +37,6 @@
       src: /dev/sdf
       fstype: xfs
       state: mounted
-    become: yes
-  - name: install pip 
-    easy_install:
-      name: pip
-      state: present
     become: yes
   - name: install docker-py
     pip:
