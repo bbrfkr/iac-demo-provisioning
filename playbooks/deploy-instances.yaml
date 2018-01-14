@@ -31,7 +31,7 @@
       path: /var/jenkins_home
       src: /dev/sdf
       fstype: xfs
-      state: present
+      state: mounted
     become: yes
   - name: install pip 
     easy_install:
@@ -46,7 +46,7 @@
   - name: create jenkins container
     docker_container:
       name: jenkins-for-iac
-      image: docker.io/jenkins:latest
+      image: docker.io/jenkinsci/blueocean:latest
       auto_remove: yes
       user: root
       detach: yes
