@@ -51,7 +51,7 @@
       user: root
       detach: yes
       ports:
-      - 8080:8080
+      - 80:8080
       - 50000:50000
       volumes:
       - /var/jenkins_home:/var/jenkins_home

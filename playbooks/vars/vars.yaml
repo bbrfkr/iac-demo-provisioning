@@ -15,13 +15,17 @@ aws_subnets:
   cidr: 192.168.102.0/24
   state: present
 aws_groups:
-- name: &sg-ssh bbrfkr-sg-ssh
-  description: ssh
+- name: &sg-workstation bbrfkr-sg-workstation
+  description: workstation
   state: present
   rules:
   - proto: tcp
     from_port: 22
     to_port: 22
+    cidr_ip: 0.0.0.0/0
+  - proto: tcp
+    from_port: 80
+    to_port: 80
     cidr_ip: 0.0.0.0/0
   - proto: icmp 
     from_port: -1
@@ -44,7 +48,7 @@ aws_groups:
     to_port: -1
     cidr_ip: 192.168.0.0/16
 - name: &sg-jenkins bbrfkr-sg-jenkins
-  description: web
+  description: jenkins
   state: present
   rules:
   - proto: tcp
@@ -52,8 +56,8 @@ aws_groups:
     to_port: 22
     cidr_ip: 192.168.0.0/16
   - proto: tcp
-    from_port: 8080
-    to_port: 8080
+    from_port: 80
+    to_port: 80
     cidr_ip: 0.0.0.0/0
   - proto: tcp
     from_port: 50000
